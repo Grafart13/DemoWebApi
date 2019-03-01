@@ -47,15 +47,15 @@ namespace WebApi_1.Controllers
         }
 
         // PUT: api/Product/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct([FromRoute] Guid id, [FromBody] Product product)
+        [HttpPut]
+        public async Task<IActionResult> PutProduct([FromBody] Product product)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != product.Id)
+            if (!ProductExists(product.Id))
             {
                 return BadRequest();
             }
@@ -68,7 +68,7 @@ namespace WebApi_1.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(id))
+                if (!ProductExists(product.Id))
                 {
                     return NotFound();
                 }

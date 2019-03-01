@@ -6,15 +6,26 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using WebApi_1.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace WebApi_1
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration _configuration)
+        {
+            Configuration = _configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ProductContext>(option =>
+                //option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                option.UseInMemoryDatabase("ProductsDB"));
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -25,9 +36,11 @@ namespace WebApi_1
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMvc();
+
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                await context.Response.WriteAsync("MVC didn't find anything, so this comunication apear");
             });
         }
     }

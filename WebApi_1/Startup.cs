@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using WebApi_1.Models;
 using Microsoft.Extensions.Configuration;
+using WebApi_1.Models.Interfaces;
 
 namespace WebApi_1
 {
@@ -25,6 +26,7 @@ namespace WebApi_1
             services.AddDbContext<ProductContext>(option =>
                 //option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
                 option.UseInMemoryDatabase("ProductsDB"));
+            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddMvc();
         }
 
@@ -40,7 +42,7 @@ namespace WebApi_1
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("MVC didn't find anything, so this comunication apear");
+                await context.Response.WriteAsync("Web Api using inline database. Please test by Postman.");
             });
         }
     }

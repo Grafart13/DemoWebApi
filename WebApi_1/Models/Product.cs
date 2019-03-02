@@ -8,17 +8,15 @@ namespace WebApi_1.Models
 {
     public class Product
     {
+        [Key]
         public Guid Id { get; set; }
 
-        [MaxLength(100)]
+        [Required(ErrorMessage = "Name of product is required")]
+        [MaxLength(100, ErrorMessage = "Name of product cannot be longer than 100 characters")]
         public string Name { get; set; }
-        public decimal Price { get; set; }
 
- //       public Product(ProductCreateInputModel p)
-//        {
-//            this.Id = 0;
-//            this.Name = p.Name;
-//            this.Price = p.Price;
- //       }
+        [Required(ErrorMessage = "Decimal price of product is required")]
+        [RegularExpression(@"^\$?\d+(\.(\d{2}))?$")]
+        public decimal Price { get; set; }
     }
 }

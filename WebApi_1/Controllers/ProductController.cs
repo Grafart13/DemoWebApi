@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using WebApi_1.Models;
+using WebApi_1.Models.Interfaces;
+using WebApi_1.Validators;
 
 namespace WebApi_1.Controllers
 {
@@ -13,31 +16,30 @@ namespace WebApi_1.Controllers
     [Route("api/[controller]")]
     public class ProductController : Controller
     {
-        private readonly ProductContext _context;
+        private IProductRepository _repository;
 
-        public ProductController(ProductContext context)
+        public ProductController(IProductRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Product
         [HttpGet]
         public IEnumerable<Product> GetProducts()
         {
-            return _context.Products;
+            return _repository.GetAll();
         }
 
         // GET: api/Product/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct([FromRoute] Guid id)
+        public IActionResult GetProduct([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(m => m.Id == id);
-
+            var product = _repository.GetById(id);
             if (product == null)
             {
                 return NotFound();
@@ -46,9 +48,9 @@ namespace WebApi_1.Controllers
             return Ok(product);
         }
 
-        // PUT: api/Product/5
+        // PUT: api/Product
         [HttpPut]
-        public async Task<IActionResult> PutProduct([FromBody] Product product)
+        public IActionResult PutProduct([MyGuidValidator, FromBody] ProductUpdateInputModel product)
         {
             if (!ModelState.IsValid)
             {
@@ -57,71 +59,58 @@ namespace WebApi_1.Controllers
 
             if (!ProductExists(product.Id))
             {
-                return BadRequest();
+                return BadRequest("Product is not exist");
             }
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+            var result = _repository.Update(product);
+      
+            if (result == true)
+                return Ok("Successfully done PUT Http method");
+            else
             {
                 if (!ProductExists(product.Id))
-                {
                     return NotFound();
-                }
                 else
-                {
-                    throw;
-                }
+                    return BadRequest();
             }
-
-            // return NoContent();
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
         }
 
         // POST: api/Product
         [HttpPost]
-        public async Task<IActionResult> PostProduct([FromBody] Product product)
+        public IActionResult PostProduct([FromBody] ProductCreateInputModel product)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            product.Id = Guid.NewGuid();
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            Product p = _repository.Add(product);
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            if (p != null)
+                return CreatedAtAction("GetProduct", new { id = p.Id }, p);
+            else
+                return BadRequest();
         }
 
         // DELETE: api/Product/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
+        public IActionResult DeleteProduct([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
+            var result = _repository.Delete(id);
+            if (result == false)
                 return NotFound();
-            }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return Ok(product);
+            else
+                return Ok($"OK Removing product with {id} id");
         }
 
         private bool ProductExists(Guid id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return _repository.GetAll().Any(e => e.Id == id);
         }
     }
 }

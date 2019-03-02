@@ -11,9 +11,8 @@ namespace WebApi_1.Validators
     {
         public override bool IsValid(Object value)
         {
-            Product p = (Product)value;
             bool result = true;
-            if (p.Id == Guid.Empty)
+            if ((Guid)value == Guid.Empty)
                 result = false;
             return result;
         }

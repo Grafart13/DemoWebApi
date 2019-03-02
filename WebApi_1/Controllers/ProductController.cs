@@ -50,7 +50,7 @@ namespace WebApi_1.Controllers
 
         // PUT: api/Product
         [HttpPut]
-        public IActionResult PutProduct([MyGuidValidator, FromBody] ProductUpdateInputModel product)
+        public IActionResult PutProduct([FromBody] ProductUpdateInputModel product)
         {
             if (!ModelState.IsValid)
             {

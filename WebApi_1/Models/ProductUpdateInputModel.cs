@@ -17,7 +17,7 @@ namespace WebApi_1.Models
         public string Name { get; set; }
 
         [Required]
-        [RegularExpression(@"^\$?\d+(\.(\d{2}))?$")]
+        [RegularExpression(@"^\$?\d+([\.\,](\d{1,2}))?$", ErrorMessage = "Unaccaptable format of price. After '.|,' should be max two digits.")]
         public decimal Price { get; set; }
     }
 }

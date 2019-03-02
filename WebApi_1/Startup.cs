@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApi_1.Models;
 using Microsoft.Extensions.Configuration;
 using WebApi_1.Models.Interfaces;
+using System.IO;
+using WebApi_1.Services;
+using WebApi_1.Services.Interfaces;
 
 namespace WebApi_1
 {
@@ -37,6 +40,8 @@ namespace WebApi_1
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var path = env.WebRootPath + Path.DirectorySeparatorChar.ToString() + "data" + Path.DirectorySeparatorChar.ToString() + "data.json";
 
             app.UseMvc();
 

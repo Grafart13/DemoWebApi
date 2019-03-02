@@ -15,6 +15,6 @@ namespace WebApi_1.Models
 
         [Required(ErrorMessage = "Decimal price of product is required")]
         [RegularExpression(@"^\$?\d+([\.\,](\d{1,2}))?$", ErrorMessage = "Unaccaptable format of price. After '.|,' should be max two digits.")]
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
     }
 }

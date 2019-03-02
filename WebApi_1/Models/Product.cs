@@ -17,6 +17,6 @@ namespace WebApi_1.Models
 
         [Required(ErrorMessage = "Decimal price of product is required")]
         [RegularExpression(@"^\$?\d+(\.(\d{2}))?$")]
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
     }
 }
